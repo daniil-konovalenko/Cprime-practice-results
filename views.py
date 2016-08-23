@@ -10,9 +10,9 @@ app = Flask(__name__)
 def index():
     table = get_table(load_results.TABLE_URL)
     parsed_table = parse_table(table)
-    rendered_table = get_table_to_render(parsed_table)
+    table_to_render = get_table_to_render(parsed_table)
 
-    return render_template("index.html", table=rendered_table)
+    return render_template("index.html", table=table_to_render)
 
 
 if __name__ == '__main__':
