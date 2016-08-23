@@ -1,22 +1,18 @@
 from flask import Flask
 from flask.templating import render_template
-import requests
-from bs4 import BeautifulSoup
-from load_results import get_table_to_render, TABLE_URL, parse_table
+import load_results
+from load_results import get_table_to_render, parse_table, get_table
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def index():
-    response = requests.get(TABLE_URL)
-
-    soup = BeautifulSoup(response.text, "lxml")
-    table = soup.select_one("table")
+    table = get_table(load_results.TABLE_URL)
     parsed_table = parse_table(table)
-    table = get_table_to_render(parsed_table)
+    rendered_table = get_table_to_render(parsed_table)
 
-    return render_template("index.html", table=table)
+    return render_template("index.html", table=rendered_table)
 
 
 if __name__ == '__main__':
