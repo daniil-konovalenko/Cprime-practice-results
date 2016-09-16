@@ -1,22 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Результаты</title>
+
+  <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
 
-  <title>Результаты зачета</title>
+
 </head>
 <body>
 <div class="container">
+  <div class="page-header">
+    <h1>Результаты</h1>
+  </div>
   <div class="row">
-    <div class="col-md-9">
+
+    <div class="col-md-4 col-md-offset-4">
       <table class="table table-hover table-striped table-condensed">
-      <thead>
+        <thead>
         <th>Группа</th>
         <th>Фамилия</th>
         <th>Имя</th>
         <th>Оценка</th>
-      </thead>
+        </thead>
         {% for row in table %}
           <tr class="{{ 'success' if row[3] >= 4 else ('warning' if row[3] == 3 else 'danger') }}">
             {% for cell in row %}
