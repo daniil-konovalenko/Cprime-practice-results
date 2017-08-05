@@ -1,6 +1,9 @@
 import requests
 import csv
 from bs4 import BeautifulSoup
+import json
+from collections import namedtuple
+from typing import List, Dict, Tuple
 
 
 TOPICS_NUMBER = 6
@@ -10,17 +13,19 @@ MAX_LEVEL_CONTEST_ID = "027717"
 TABLE_URL = "https://ejudge.lksh.ru/standings/dk/stand.php?from={}&to={}&title=Зачет".format(MIN_LEVEL_CONTEST_ID,
                                                                                              MAX_LEVEL_CONTEST_ID)
 
+Student = namedtuple('Student', 'group, last_name, first_name')
 
-# Fetches results table from ejudge
+
 def get_table(table_url) -> BeautifulSoup:
+    """Fetches results table from ejudge, returns soup"""
     response = requests.get(table_url)
     soup = BeautifulSoup(response.text, "lxml")
     table = soup.select_one("table")
     return table
 
 
-# Returns dict like {name: [1 if problem is solved else 0]}
-def parse_table(table_soup: BeautifulSoup) -> dict:
+def parse_results(table_soup: BeautifulSoup) -> Dict[Student, int]:
+    """Returns dict like {Student: [1 if problem is solved else 0]}"""
     result = {}
     rows = [row for row in table_soup.select("tr") if row.has_attr("ejid")]
     for row in rows:
@@ -28,12 +33,13 @@ def parse_table(table_soup: BeautifulSoup) -> dict:
 
         problem_tags = [td for td in row.findAll("td") if td.has_attr("title")]
         solved = [1 if tag["class"] == ["ac"] else 0 for tag in problem_tags]
-        result[(group, last_name, first_name)] = solved
+        result[Student(group, last_name, first_name)] = calculate_mark(solved)
 
     return result
 
 
-def calculate_mark(solved):
+def calculate_mark(solved: List[int]) -> int:
+    """Calculates mark from a list of solved"""
     levels = set()
     max_levels = []
     for topic in range(TOPICS_NUMBER):
@@ -51,13 +57,14 @@ def calculate_mark(solved):
     return min(len(levels), len(max_levels))
 
 
-def get_table_to_render(parsed_table: dict) -> list:
-    return sorted([(*name, calculate_mark(solved)) for name, solved in parsed_table.items()])
+def get_table_to_render(parsed_table: Dict[Student, int]) -> list:
+    return sorted([(*student, score)
+                   for student, score in parsed_table.items()])
 
 
 if __name__ == '__main__':
     results_table = get_table(TABLE_URL)
-    parsed_table = parse_table(results_table)
+    parsed_table = parse_results(results_table)
     table = get_table_to_render(parsed_table)
     with open("results.csv", "w", encoding="utf-8") as file:
         csv_writer = csv.writer(file)
