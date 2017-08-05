@@ -18,18 +18,25 @@ function row_class(score){
 $(document).ready(function () {
    $.ajax('/table').then(function (data) {
        data = $.parseJSON(data);
-       $(function () {
-           $.each(data, function(i, item){
-               var $tr = $('<tr>', {"class": row_class(item.score)}).append(
-                   $('<td>').text(item.group),
-                   $('<td>').text(item.last_name),
-                   $('<td>').text(item.first_name),
-                   $('<td>').text(item.score)
-               );
-               $tr.appendTo('#results-table-body');
-               $('#results-table').show();
-               $('#loader').hide();
+       if (data.error !== undefined){
+            $('#loader').hide();
+            $alert = $('<div>', {'class': "alert alert-danger"}).text(data.error);
+            $alert.appendTo('#first-row');
+       }
+       else {
+           $(function () {
+               $.each(data, function(i, item){
+                   var $tr = $('<tr>', {"class": row_class(item.score)}).append(
+                       $('<td>').text(item.group),
+                       $('<td>').text(item.last_name),
+                       $('<td>').text(item.first_name),
+                       $('<td>').text(item.score)
+                   );
+                   $tr.appendTo('#results-table-body');
+                   $('#results-table').show();
+                   $('#loader').hide();
+               })
            })
-       })
+       }
    })
 });
