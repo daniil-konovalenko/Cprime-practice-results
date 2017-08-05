@@ -26,7 +26,9 @@ $(document).ready(function () {
                    $('<td>').text(item.first_name),
                    $('<td>').text(item.score)
                );
-               $tr.appendTo('#results-table')
+               $tr.appendTo('#results-table-body');
+               $('#results-table').show();
+               $('#loader').hide();
            })
        })
    })

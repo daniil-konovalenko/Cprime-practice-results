@@ -11,6 +11,8 @@
   <script src="{{ url_for('static', filename='jquery-3.2.1.min.js') }} "></script>
   <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='loader.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='table.css') }}" rel="stylesheet">
   <script src="{{ url_for('static', filename='bootstrap.min.js') }} "></script>
 
 
@@ -21,9 +23,10 @@
     <h1>Результаты</h1>
   </div>
   <div class="row">
-
+<div class="progress-line" id="loader"></div>
     <div class="col-md-4 col-md-offset-4">
-      <table class="table table-hover table-striped table-condensed">
+
+      <table class="table table-hover table-striped table-condensed" id="results-table">
         <thead>
         <tr>
           <th>Группа</th>
@@ -32,7 +35,7 @@
           <th>Оценка</th>
         </tr>
         </thead>
-          <tbody id="results-table">
+          <tbody id="results-table-body">
           </tbody>
       </table>
     </div>
