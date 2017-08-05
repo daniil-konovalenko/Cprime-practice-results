@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <title>Результаты</title>
-
+  <!--JQuery-->
+  <script src="{{ url_for('static', filename='jquery-3.2.1.min.js') }} "></script>
   <!-- Bootstrap -->
   <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+  <script src="{{ url_for('static', filename='bootstrap.min.js') }} "></script>
 
 
 </head>
@@ -29,22 +32,12 @@
           <th>Оценка</th>
         </tr>
         </thead>
-        {% for row in table %}
-          <tr class="{{
-                  'success' if row[3] >= 4 else (
-                  'warning' if row[3] == 3 else
-                  'danger')
-                  }}">
-            {% for cell in row %}
-
-              <td>{{ cell }}</td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-
+          <tbody id="results-table">
+          </tbody>
       </table>
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='table.js') }}" type="application/javascript"></script>
 </body>
 </html>
