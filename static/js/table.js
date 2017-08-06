@@ -33,7 +33,8 @@ $(document).ready(function () {
                        $('<td>').text(item.score)
                    );
                    $tr.appendTo('#results-table-body');
-                   $('#results-table').show();
+                   $table = $('#results-table');
+                   $table.show();
                    $('#loader').hide();
                })
            })
