@@ -9,11 +9,11 @@ TOPICS_NUMBER = 6
 LEVELS_NUMBER = 5
 MIN_LEVEL_CONTEST_ID = "027713"
 MAX_LEVEL_CONTEST_ID = "027717"
-TABLE_URL = "https://ejudge.lksh.ru/standings/dk/stand.php?from={}&to={}&title=Зачет".format(
-    MIN_LEVEL_CONTEST_ID,
-    MAX_LEVEL_CONTEST_ID)
+TABLE_URL = ("https://ejudge.lksh.ru/standings/dk/stand.php"
+             "?from={}&to={}".format(MIN_LEVEL_CONTEST_ID,
+                                     MAX_LEVEL_CONTEST_ID))
 
-Student = namedtuple('Student', 'group, last_name, first_name')
+Student = namedtuple('Student', 'group, last_name, first_name, ejid')
 
 
 def get_table(table_url) -> BeautifulSoup:
@@ -24,17 +24,17 @@ def get_table(table_url) -> BeautifulSoup:
     return table
 
 
-def parse_results(table_soup: BeautifulSoup) -> Dict[Student, int]:
+def parse_results(table_soup: BeautifulSoup) -> Dict[Student, List[int]]:
     """Returns dict like {Student: [1 if problem is solved else 0]}"""
     result = {}
     rows = [row for row in table_soup.select("tr") if row.has_attr("ejid")]
     for row in rows:
-        group, last_name, first_name = row.select_one("nobr").contents[
-            0].split()
+        [group, last_name, first_name], ejid = row.select_one("nobr").contents[
+            0].split(), int(row['ejid'])
         
         problem_tags = [td for td in row.findAll("td") if td.has_attr("title")]
         solved = [1 if tag["class"] == ["ac"] else 0 for tag in problem_tags]
-        result[Student(group, last_name, first_name)] = calculate_mark(solved)
+        result[Student(group, last_name, first_name, ejid)] = solved
     
     return result
 
@@ -58,21 +58,39 @@ def calculate_mark(solved: List[int]) -> int:
     return min(len(levels), len(max_levels))
 
 
-def get_table_to_render(parsed_table: Dict[Student, int]) -> list:
-    return sorted([(*student, score)
-                   for student, score in parsed_table.items()])
+def get_table_to_render(parsed_table: Dict[Student, List[int]]) -> list:
+    return sorted([(*student, calculate_mark(solved))
+                   for student, solved in parsed_table.items()])
 
 
-def get_table_json(parsed_table: Dict[Student, int]) -> str:
+def get_table_json(parsed_table: Dict[Student, List[int]]) -> str:
     return json.dumps([{
                            'first_name': student.first_name,
                            'last_name': student.last_name,
                            'group': student.group,
-                           'score': score
-                       } for student, score in parsed_table.items()],
+                           'score': calculate_mark(solved),
+                           'ejid': student.ejid
+                       } for student, solved in parsed_table.items()],
                       ensure_ascii=False)
 
 
+def get_personal_json(parsed_table: Dict[Student, List[int]], ejid: int) -> str:
+    filtered_student = [(student, solved)
+                        for student, solved in parsed_table.items()
+                        if student.ejid == ejid]
+    
+    if filtered_student:
+        student, solved = filtered_student[0]
+        return json.dumps({'first_ name': student.first_name,
+                           'last_name': student.last_name,
+                           'group': student.group,
+                           'score': calculate_mark(solved),
+                           'solved': solved,
+                           'ejid': student.ejid},
+                          ensure_ascii=False)
+    else:
+        return json.dumps({'error': 'ID не найден'}, ensure_ascii=False)
+    
 if __name__ == '__main__':
     results_table = get_table(TABLE_URL)
     parsed_table = parse_results(results_table)

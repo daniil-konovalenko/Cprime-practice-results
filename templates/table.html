@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="col-md-6 col-md-offset-3">
+
+      <table class="sortable-theme-bootstrap table table-condensed table-striped table-hover"
+             id="results-table" data-sortable>
+        <thead>
+        <tr>
+          <th>Группа</th>
+          <th>Фамилия</th>
+          <th>Имя</th>
+          <th>Оценка</th>
+        </tr>
+        </thead>
+          <tbody id="results-table-body">
+          </tbody>
+      </table>
+    </div>
+    <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+{% endblock %}
