@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from flask.templating import render_template
 import load_results
@@ -17,10 +18,13 @@ def index():
 @app.route('/table')
 def table():
     try:
+        app.logger.info(f'Sending request to ejudge: {load_results.TABLE_URL}')
         table = get_table(load_results.TABLE_URL)
+        app.logger.info('Got response from ejudge')
         parsed_table = parse_results(table)
         return get_table_json(parsed_table)
     except ConnectionError:
+        app.logger.error('Ejudge not responding')
         return json.dumps({'error': 'Ejudge не отвечает :('})
 
 
@@ -34,5 +38,12 @@ def personal_result(ejid: int):
         return json.dumps({'error': 'Ejudge не отвечает :('},
                            ensure_ascii=False)
 
+
+@app.route('/personal/')
+def personal():
+    return render_template('personal.html')
+
+
 if __name__ == '__main__':
+    app.logger.setLevel(logging.DEBUG)
     app.run("0.0.0.0", debug=True)
