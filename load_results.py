@@ -39,6 +39,9 @@ def parse_results(table_soup: BeautifulSoup) -> Dict[Student, List[int]]:
     return result
 
 
+def last_occurrence(list_, elem):
+    return len(list_) - 1 - list_[::-1].index(elem)
+
 def calculate_mark(solved: List[int]) -> int:
     """Calculates mark from a list of solved"""
     levels = set()
@@ -46,13 +49,13 @@ def calculate_mark(solved: List[int]) -> int:
     for topic in range(TOPICS_NUMBER):
         solved_from_topic = solved[topic::TOPICS_NUMBER]
         if any(solved_from_topic):
-            max_level = solved_from_topic.index(1)
+            max_level = last_occurrence(solved_from_topic, 1)
             max_levels.append(max_level)
     
     max_levels.sort(reverse=True)
     for level in max_levels:
-        while level in levels:
-            level = max(level - 1, 0)
+        while level in levels and level != 0:
+            level -= 1
         levels.add(level)
     
     return min(len(levels), len(max_levels))

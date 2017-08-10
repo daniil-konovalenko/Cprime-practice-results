@@ -53,6 +53,17 @@ class CalculateMarkTest(unittest.TestCase):
         got = calculate_mark(solved)
         self.assertEqual(expected, got)
 
+    def testVsevolod(self):
+        solved = [1, 0, 1, 0, 0, 1,
+                  0, 0, 1, 0, 0, 0,
+                  0, 1, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 1]
+        expected = 4
+        got = calculate_mark(solved)
+        self.assertEqual(expected, got)
+        
+    @unittest.skip
     def testTenPoints(self):
         solved = [1, 1, 1, 1, 1, 1,
                   1, 0, 0, 0, 0, 0,
