@@ -7,8 +7,8 @@ from typing import List, Dict
 
 TOPICS_NUMBER = 6
 LEVELS_NUMBER = 5
-MIN_LEVEL_CONTEST_ID = "027713"
-MAX_LEVEL_CONTEST_ID = "027717"
+MIN_LEVEL_CONTEST_ID = "030813"
+MAX_LEVEL_CONTEST_ID = "030817"
 TABLE_URL = ("https://ejudge.lksh.ru/standings/dk/stand.php"
              "?from={}&to={}".format(MIN_LEVEL_CONTEST_ID,
                                      MAX_LEVEL_CONTEST_ID))
@@ -46,13 +46,13 @@ def calculate_mark(solved: List[int]) -> int:
     for topic in range(TOPICS_NUMBER):
         solved_from_topic = solved[topic::TOPICS_NUMBER]
         if any(solved_from_topic):
-            max_level = list(reversed(solved_from_topic)).index(1)
+            max_level = solved_from_topic.index(1)
             max_levels.append(max_level)
     
     max_levels.sort(reverse=True)
     for level in max_levels:
         while level in levels:
-            level -= 1
+            level = max(level - 1, 0)
         levels.add(level)
     
     return min(len(levels), len(max_levels))
