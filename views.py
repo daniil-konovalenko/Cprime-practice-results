@@ -15,7 +15,7 @@ def index():
     return render_template("table.html")
 
 
-@app.route('/table')
+@app.route('/table/')
 def table():
     try:
         app.logger.info(f'Sending request to ejudge: {load_results.TABLE_URL}')
